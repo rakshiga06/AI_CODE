@@ -22,6 +22,7 @@ void hillClimb(int start) {
                 }
             }
         }
+        
 
         if (bestNeighbor == -1) {
             printf("No better neighbor. Stopped at Node %d (Value = %d)\n", current, value[current]);

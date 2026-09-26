@@ -54,7 +54,8 @@ void beamSearch(int start) {
         // Check if best candidate improves over best in current beam
         int bestInBeam = value[beam[0]];
         for (int i = 1; i < beamSize; i++)
-            if (value[beam[i]] > bestInBeam) bestInBeam = value[beam[i]];
+            if (value[beam[i]] > bestInBeam) 
+            bestInBeam = value[beam[i]];
 
         if (candValues[0] <= bestInBeam) {
             printf("No improvement possible. Stopping at Level %d.\n", level);
@@ -80,38 +81,38 @@ void beamSearch(int start) {
     printf("\nBest Solution Found: Node %d, Value = %d\n", best, value[best]);
 }
 
-int main() {
-    int edges, u, v, startNode;
+// int main() {
+//     int edges, u, v, startNode;
 
-    printf("Enter number of nodes: ");
-    scanf("%d", &N);
+//     printf("Enter number of nodes: ");
+//     scanf("%d", &N);
 
-    printf("Enter value (fitness) for each node:\n");
-    for (int i = 0; i < N; i++) {
-        printf("Value of Node %d: ", i);
-        scanf("%d", &value[i]);
-    }
+//     printf("Enter value (fitness) for each node:\n");
+//     for (int i = 0; i < N; i++) {
+//         printf("Value of Node %d: ", i);
+//         scanf("%d", &value[i]);
+//     }
 
-    for (int i = 0; i < N; i++)
-        for (int j = 0; j < N; j++)
-            graph[i][j] = 0;
+//     for (int i = 0; i < N; i++)
+//         for (int j = 0; j < N; j++)
+//             graph[i][j] = 0;
 
-    printf("Enter number of edges: ");
-    scanf("%d", &edges);
+//     printf("Enter number of edges: ");
+//     scanf("%d", &edges);
 
-    printf("Enter edges as (u v):\n");
-    for (int i = 0; i < edges; i++) {
-        scanf("%d %d", &u, &v);
-        graph[u][v] = 1;
-        graph[v][u] = 1;   // undirected
-    }
+//     printf("Enter edges as (u v):\n");
+//     for (int i = 0; i < edges; i++) {
+//         scanf("%d %d", &u, &v);
+//         graph[u][v] = 1;
+//         graph[v][u] = 1;   // undirected
+//     }
 
-    printf("Enter beam width (k): ");
-    scanf("%d", &beamWidth);
+//     printf("Enter beam width (k): ");
+//     scanf("%d", &beamWidth);
 
-    printf("Enter starting node: ");
-    scanf("%d", &startNode);
+//     printf("Enter starting node: ");
+//     scanf("%d", &startNode);
 
-    beamSearch(startNode);
-    return 0;
-}
+//     beamSearch(startNode);
+//     return 0;
+// }
