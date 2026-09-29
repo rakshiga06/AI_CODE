@@ -16,7 +16,7 @@ int dequeue() {
     return queue[front++];
 }
 
-int isEmpty() {
+int isEmpty() { 
     return front == rear;
 }
 
