@@ -1,4 +1,3 @@
-// BFS - unweighted, undirected graph
 #include <stdio.h>
 
 #define MAX 20
@@ -6,6 +5,7 @@
 int graph[MAX][MAX];
 int N;
 int visited[MAX];
+int parent[MAX];
 int queue[MAX], front = 0, rear = 0;
 
 void enqueue(int node) {
@@ -16,12 +16,40 @@ int dequeue() {
     return queue[front++];
 }
 
-int isEmpty() { 
+int isEmpty() {
     return front == rear;
 }
 
+int MoveGen(int state, int succ[]) {
+    int count = 0;
+    for (int i = 0; i < N; i++)
+        if (graph[state][i] == 1)
+            succ[count++] = i;
+    return count;
+}
+
+int GoalTest(int state, int target) {
+    return state == target;
+}
+
+void ReconstructPath(int target) {
+    int path[MAX];
+    int count = 0;
+
+    for (int temp = target; temp != -1; temp = parent[temp])
+        path[count++] = temp;
+
+    printf("Path: ");
+    for (int i = count - 1; i >= 0; i--)
+        printf("%d ", path[i]);
+    printf("\nNumber of edges: %d\n", count - 1);
+}
+
 void bfs(int start, int target) {
-    for (int i = 0; i < N; i++) visited[i] = 0;
+    for (int i = 0; i < N; i++) {
+        visited[i] = 0;
+        parent[i] = -1;
+    }
     front = rear = 0;
 
     visited[start] = 1;
@@ -33,16 +61,21 @@ void bfs(int start, int target) {
         int current = dequeue();
         printf("%d ", current);
 
-        if (current == target) {
+        if (GoalTest(current, target)) {
             printf("\n\nTrapped survivor found at Node %d!\n", target);
+            ReconstructPath(target);
             return;
         }
 
-        // explore all neighbors at this level before going deeper
-        for (int i = 0; i < N; i++) {
-            if (graph[current][i] == 1 && !visited[i]) {
-                visited[i] = 1;
-                enqueue(i);
+        int succ[MAX];
+        int n = MoveGen(current, succ);
+
+        for (int k = 0; k < n; k++) {
+            int next = succ[k];
+            if (!visited[next]) {
+                visited[next] = 1;
+                parent[next] = current;
+                enqueue(next);
             }
         }
     }

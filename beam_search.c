@@ -1,12 +1,12 @@
 #include <stdio.h>
 #define MAX 20
 
-int graph[MAX][MAX];   // adjacency matrix (0/1)
-int value[MAX];        // value/fitness of each node
-int N;                  // number of nodes
-int beamWidth;          // k
+int graph[MAX][MAX];   
+int value[MAX];        
+int N;                  
+int beamWidth;         
 
-// check if a node is already in the beam
+
 int isInBeam(int node, int beam[], int beamSize) {
     for (int i = 0; i < beamSize; i++)
         if (beam[i] == node) return 1;
@@ -24,7 +24,7 @@ void beamSearch(int start) {
         level++;
         int candidates[MAX], candValues[MAX], candCount = 0;
 
-        // Generate all neighbors of all nodes currently in beam
+
         for (int b = 0; b < beamSize; b++) {
             int cur = beam[b];
             for (int i = 0; i < N; i++) {
@@ -41,7 +41,7 @@ void beamSearch(int start) {
             break;
         }
 
-        // Sort candidates by value descending (simple bubble sort)
+
         for (int i = 0; i < candCount - 1; i++) {
             for (int j = 0; j < candCount - i - 1; j++) {
                 if (candValues[j] < candValues[j + 1]) {
@@ -51,7 +51,7 @@ void beamSearch(int start) {
             }
         }
 
-        // Check if best candidate improves over best in current beam
+    
         int bestInBeam = value[beam[0]];
         for (int i = 1; i < beamSize; i++)
             if (value[beam[i]] > bestInBeam) 
@@ -62,7 +62,7 @@ void beamSearch(int start) {
             break;
         }
 
-        // Keep top-k (beamWidth) candidates as new beam
+      
         beamSize = (candCount < beamWidth) ? candCount : beamWidth;
         for (int i = 0; i < beamSize; i++)
             beam[i] = candidates[i];
@@ -73,7 +73,7 @@ void beamSearch(int start) {
         printf("\n");
     }
 
-    // Find best node in final beam
+
     int best = beam[0];
     for (int i = 1; i < beamSize; i++)
         if (value[beam[i]] > value[best]) best = beam[i];
@@ -81,38 +81,38 @@ void beamSearch(int start) {
     printf("\nBest Solution Found: Node %d, Value = %d\n", best, value[best]);
 }
 
-// int main() {
-//     int edges, u, v, startNode;
+int main() {
+    int edges, u, v, startNode;
 
-//     printf("Enter number of nodes: ");
-//     scanf("%d", &N);
+    printf("Enter number of nodes: ");
+    scanf("%d", &N);
 
-//     printf("Enter value (fitness) for each node:\n");
-//     for (int i = 0; i < N; i++) {
-//         printf("Value of Node %d: ", i);
-//         scanf("%d", &value[i]);
-//     }
+    printf("Enter value (fitness) for each node:\n");
+    for (int i = 0; i < N; i++) {
+        printf("Value of Node %d: ", i);
+        scanf("%d", &value[i]);
+    }
 
-//     for (int i = 0; i < N; i++)
-//         for (int j = 0; j < N; j++)
-//             graph[i][j] = 0;
+    for (int i = 0; i < N; i++)
+        for (int j = 0; j < N; j++)
+            graph[i][j] = 0;
 
-//     printf("Enter number of edges: ");
-//     scanf("%d", &edges);
+    printf("Enter number of edges: ");
+    scanf("%d", &edges);
 
-//     printf("Enter edges as (u v):\n");
-//     for (int i = 0; i < edges; i++) {
-//         scanf("%d %d", &u, &v);
-//         graph[u][v] = 1;
-//         graph[v][u] = 1;   // undirected
-//     }
+    printf("Enter edges as (u v):\n");
+    for (int i = 0; i < edges; i++) {
+        scanf("%d %d", &u, &v);
+        graph[u][v] = 1;
+        graph[v][u] = 1;  
+    }
 
-//     printf("Enter beam width (k): ");
-//     scanf("%d", &beamWidth);
+    printf("Enter beam width (k): ");
+    scanf("%d", &beamWidth);
 
-//     printf("Enter starting node: ");
-//     scanf("%d", &startNode);
+    printf("Enter starting node: ");
+    scanf("%d", &startNode);
 
-//     beamSearch(startNode);
-//     return 0;
-// }
+    beamSearch(startNode);
+    return 0;
+}

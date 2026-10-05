@@ -5,10 +5,37 @@
 
 int graph[N][N];
 int h[N];
-int visited[N];   // closed list (already expanded)
-int inOpen[N];    // open list (discovered, waiting to be expanded)
-int parent[N];
+int visited[N];  
+int parent[N];   
 int nodes;
+
+int MoveGen(int state, int C[])
+{
+    int count = 0;                     set
+    for (int i = 0; i < nodes; i++)
+        if (graph[state][i]==1){
+             C[count++] = i;
+        }
+           
+    return count;
+}
+
+
+int GoalTest(int state, int goal)
+{
+    return state == goal;
+}
+
+void ReconstructPath(int node)
+{
+    if (parent[node] == -1)            
+    {
+        printf("%d ", node);
+        return;
+    }
+    ReconstructPath(parent[node]);
+    printf("%d ", node);
+}
 
 void greedyBFS(int start, int goal)
 {
@@ -24,7 +51,7 @@ void greedyBFS(int start, int goal)
 
     while (1)
     {
-        // Pick node from OPEN list with the smallest heuristic
+      
         int current = -1;
         int minH = INT_MAX;
 
@@ -37,23 +64,27 @@ void greedyBFS(int start, int goal)
             }
         }
 
-        // Open list empty -> no path
+ 
         if (current == -1)
             break;
 
         inOpen[current] = 0;
         visited[current] = 1;
 
-        if (current == goal)
+        if (GoalTest(current, goal))
         {
             found = 1;
             break;
         }
 
-        // Add unvisited neighbours to the open list
-        for (int i = 0; i < nodes; i++)
+    
+        int C[N];
+        int count = MoveGen(current, C);
+
+        for (int k = 0; k < count; k++)
         {
-            if (graph[current][i] && !visited[i] && !inOpen[i])
+            int i = C[k];
+            if (!visited[i] && !inOpen[i])
             {
                 parent[i] = current;
                 inOpen[i] = 1;
@@ -67,16 +98,9 @@ void greedyBFS(int start, int goal)
         return;
     }
 
-    // Build path from goal back to start
-    int path[N];
-    int count = 0;
-
-    for (int temp = goal; temp != -1; temp = parent[temp])
-        path[count++] = temp;
 
     printf("Path: ");
-    for (int i = count - 1; i >= 0; i--)
-        printf("%d ", path[i]);
+    ReconstructPath(goal);
     printf("\n");
 }
 

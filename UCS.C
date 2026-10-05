@@ -3,12 +3,38 @@
 
 #define N 20
 
-int graph[N][N];   // edge weights (0 = no edge)
-int g[N];          // cost from start to node
-int visited[N];    // closed list
-int inOpen[N];     // open list
+int graph[N][N];
+int g[N];
+int visited[N];
+int inOpen[N];
 int parent[N];
 int nodes;
+
+int MoveGen(int state, int C[])
+{
+    int count = 0;
+    for (int i = 0; i < nodes; i++)
+        if (graph[state][i] > 0)
+            C[count++] = i;
+    return count;
+}
+
+int GoalTest(int state, int goal)
+{
+    return state == goal;
+}
+
+void ReconstructPath(int node)
+{
+    if (parent[node] == -1)
+    {
+        printf("%d ", node);
+        return;
+    }
+
+    ReconstructPath(parent[node]);
+    printf("%d ", node);
+}
 
 void ucs(int start, int goal)
 {
@@ -22,11 +48,11 @@ void ucs(int start, int goal)
 
     g[start] = 0;
     inOpen[start] = 1;
+
     int found = 0;
 
     while (1)
     {
-        // Pick node from OPEN with the smallest g
         int current = -1;
         int minG = INT_MAX;
 
@@ -39,22 +65,26 @@ void ucs(int start, int goal)
             }
         }
 
-        if (current == -1)      // open list empty
+        if (current == -1)
             break;
 
         inOpen[current] = 0;
         visited[current] = 1;
 
-        if (current == goal)    // stop when goal is expanded
+        if (GoalTest(current, goal))
         {
             found = 1;
             break;
         }
 
-        // Relax neighbours
-        for (int i = 0; i < nodes; i++)
+        int C[N];
+        int count = MoveGen(current, C);
+
+        for (int k = 0; k < count; k++)
         {
-            if (graph[current][i] > 0 && !visited[i])
+            int i = C[k];
+
+            if (!visited[i])
             {
                 int newG = g[current] + graph[current][i];
 
@@ -74,15 +104,8 @@ void ucs(int start, int goal)
         return;
     }
 
-    int path[N];
-    int count = 0;
-
-    for (int temp = goal; temp != -1; temp = parent[temp])
-        path[count++] = temp;
-
     printf("Path: ");
-    for (int i = count - 1; i >= 0; i--)
-        printf("%d ", path[i]);
+    ReconstructPath(goal);
     printf("\nTotal cost: %d\n", g[goal]);
 }
 
@@ -107,15 +130,18 @@ int main()
     scanf("%d", &edges);
 
     printf("Enter edges (u v weight):\n");
+
     for (int i = 0; i < edges; i++)
     {
         scanf("%d %d %d", &u, &v, &w);
+
         if (u < 0 || u >= nodes || v < 0 || v >= nodes || w <= 0)
         {
             printf("Invalid edge\n");
             i--;
             continue;
         }
+
         graph[u][v] = w;
         graph[v][u] = w;
     }

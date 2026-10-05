@@ -1,4 +1,3 @@
-// DFS - unweighted, undirected graph (iterative, using a stack)
 #include <stdio.h>
 
 #define MAX 20
@@ -6,7 +5,8 @@
 int graph[MAX][MAX];
 int N;
 int visited[MAX];
-int stack[MAX], top = -1;
+int parent[MAX];
+int stack[MAX * MAX], top = -1;
 
 void push(int node) {
     stack[++top] = node;
@@ -20,8 +20,36 @@ int isEmpty() {
     return top == -1;
 }
 
+int MoveGen(int state, int succ[]) {
+    int count = 0;
+    for (int i = 0; i < N; i++)
+        if (graph[state][i] == 1)
+            succ[count++] = i;
+    return count;
+}
+
+int GoalTest(int state, int target) {
+    return state == target;
+}
+
+void ReconstructPath(int target) {
+    int path[MAX];
+    int count = 0;
+
+    for (int temp = target; temp != -1; temp = parent[temp])
+        path[count++] = temp;
+
+    printf("Path: ");
+    for (int i = count - 1; i >= 0; i--)
+        printf("%d ", path[i]);
+    printf("\nNumber of edges: %d\n", count - 1);
+}
+
 void dfs(int start, int target) {
-    for (int i = 0; i < N; i++) visited[i] = 0;
+    for (int i = 0; i < N; i++) {
+        visited[i] = 0;
+        parent[i] = -1;
+    }
     top = -1;
 
     push(start);
@@ -31,20 +59,25 @@ void dfs(int start, int target) {
     while (!isEmpty()) {
         int current = pop();
 
-        if (visited[current]) continue; 
+        if (visited[current]) continue;
 
         visited[current] = 1;
         printf("%d ", current);
 
-        if (current == target) {
+        if (GoalTest(current, target)) {
             printf("\n\nReached deepest target point: Node %d!\n", target);
+            ReconstructPath(target);
             return;
         }
 
-        // push all unvisited neighbors (they'll be explored before older stack entries)
-        for (int i = 0; i < N; i++) {
-            if (graph[current][i] == 1 && !visited[i]) {
-                push(i);
+        int succ[MAX];
+        int n = MoveGen(current, succ);
+
+        for (int k = 0; k < n; k++) {
+            int next = succ[k];
+            if (!visited[next]) {
+                parent[next] = current;
+                push(next);
             }
         }
     }

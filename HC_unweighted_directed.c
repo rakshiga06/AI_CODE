@@ -13,7 +13,7 @@ void hillClimb(int start) {
         int bestNeighbor = -1;
         int bestValue = value[current];
 
-        // only follow OUTGOING edges: graph[current][i] == 1
+        // only follow OUTGOING edges: graph[current][i] == 1 and my name is gundumani
         for (int i = 0; i < N; i++) {
             if (graph[current][i] == 1) {
                 if (value[i] > bestValue) {

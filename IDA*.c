@@ -4,38 +4,69 @@
 #define N 20
 #define FOUND -1
 
-int graph[N][N];   // edge weights (0 = no edge)
-int h[N];          // heuristic
-int onPath[N];     // nodes on the current DFS path (avoids cycles)
-int path[N];       // current path (stack)
-int pathLen;
+int graph[N][N];
+int h[N];
+int onPath[N];
+int parent[N];
 int nodes;
 int goal;
 int goalCost;
+
+int MoveGen(int state, int succ[])
+{
+    int count = 0;
+    for (int i = 0; i < nodes; i++)
+        if (graph[state][i] > 0)
+            succ[count++] = i;
+    return count;
+}
+
+int GoalTest(int state, int goal)
+{
+    return state == goal;
+}
+
+void ReconstructPath(int goal)
+{
+    int path[N];
+    int count = 0;
+
+    for (int temp = goal; temp != -1; temp = parent[temp])
+        path[count++] = temp;
+
+    printf("Path: ");
+    for (int i = count - 1; i >= 0; i--)
+        printf("%d ", path[i]);
+    printf("\nTotal cost: %d\n", goalCost);
+}
 
 int search(int node, int g, int threshold)
 {
     int f = g + h[node];
 
-    if (f > threshold)          // prune, report the f that exceeded the limit
+    if (f > threshold)
         return f;
 
-    onPath[node] = 1;
-    path[pathLen++] = node;
-
-    if (node == goal)
+    if (GoalTest(node, goal))
     {
         goalCost = g;
-        return FOUND;           // keep path[] intact
+        return FOUND;
     }
 
+    onPath[node] = 1;
+
+    int succ[N];
+    int n = MoveGen(node, succ);
     int min = INT_MAX;
 
-    for (int i = 0; i < nodes; i++)
+    for (int k = 0; k < n; k++)
     {
-        if (graph[node][i] > 0 && !onPath[i])
+        int next = succ[k];
+
+        if (!onPath[next])
         {
-            int t = search(i, g + graph[node][i], threshold);
+            parent[next] = node;
+            int t = search(next, g + graph[node][next], threshold);
 
             if (t == FOUND)
                 return FOUND;
@@ -45,9 +76,7 @@ int search(int node, int g, int threshold)
         }
     }
 
-    // backtrack
     onPath[node] = 0;
-    pathLen--;
 
     return min;
 }
@@ -59,27 +88,26 @@ void idastar(int start)
     while (1)
     {
         for (int i = 0; i < nodes; i++)
+        {
             onPath[i] = 0;
-        pathLen = 0;
+            parent[i] = -1;
+        }
 
         int t = search(start, 0, threshold);
 
         if (t == FOUND)
         {
-            printf("Path: ");
-            for (int i = 0; i < pathLen; i++)
-                printf("%d ", path[i]);
-            printf("\nTotal cost: %d\n", goalCost);
+            ReconstructPath(goal);
             return;
         }
 
-        if (t == INT_MAX)       // nothing left to explore
+        if (t == INT_MAX)
         {
             printf("No path exists\n");
             return;
         }
 
-        threshold = t;          // raise the limit to the smallest f that was pruned
+        threshold = t;
     }
 }
 
@@ -89,12 +117,6 @@ int main()
 
     printf("Enter number of nodes (max %d): ", N);
     scanf("%d", &nodes);
-
-    if (nodes <= 0 || nodes > N)
-    {
-        printf("Invalid number of nodes\n");
-        return 1;
-    }
 
     for (int i = 0; i < nodes; i++)
         for (int j = 0; j < nodes; j++)
@@ -107,12 +129,6 @@ int main()
     for (int i = 0; i < edges; i++)
     {
         scanf("%d %d %d", &u, &v, &w);
-        if (u < 0 || u >= nodes || v < 0 || v >= nodes || w <= 0)
-        {
-            printf("Invalid edge\n");
-            i--;
-            continue;
-        }
         graph[u][v] = w;
         graph[v][u] = w;
     }
